@@ -1,0 +1,43 @@
+name: Publish to PyPI
+
+# Manual only: run it from the Actions tab once the version in pyproject.toml
+# and CHANGELOG.md is the one to release. PyPI trusted publishing (OIDC): no
+# token is stored; the PyPI project must list this repository, this workflow
+# file and the `pypi` environment as a trusted publisher.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e '.[dev]'
+      - run: ruff check . && ruff format --check . && mypy && pytest
+      - run: python -m build
+      - run: pip install twine && twine check --strict dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: pypi
+      url: https://pypi.org/project/mlab-sh/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

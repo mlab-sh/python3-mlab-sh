@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mlab-sh"
+version = "1.0.0"
+description = "Official Python client for the mlab.sh threat intelligence, CVE and threat-actor APIs"
+readme = "README.md"
+license = "GPL-3.0-only"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "mlab.sh" }]
+keywords = ["security", "threat-intelligence", "cve", "ioc", "sbom", "mlab"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Security",
+    "Typing :: Typed",
+]
+dependencies = ["httpx>=0.24,<1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "pytest-asyncio>=0.21", "respx>=0.20", "ruff>=0.4", "mypy>=1.8", "build>=1"]
+
+[project.urls]
+Homepage = "https://mlab.sh"
+Documentation = "https://doc.mlab.sh/docs/mlab.sh/developer/documentation"
+Repository = "https://github.com/mlab-sh/python3-mlab-sh"
+Changelog = "https://github.com/mlab-sh/python3-mlab-sh/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mlab_sh"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = ["integration: runs against a live instance, needs MLAB_TEST_BASE_URL"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py39"
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+strict = true
+files = ["src", "tests"]
